@@ -1,5 +1,6 @@
 #include <SoftwareSerial.h>
 #include "VoiceRecognitionV3.h"
+#include <EEPROM.h>
 
 /**
   Connection
@@ -12,6 +13,9 @@ VR myVR(10, 11);   // 2:RX 3:TX, you can choose your favourite pins.
 uint8_t records[7]; // save record
 uint8_t buf[64];
 
+String chatid;
+
+int addr = 0;
 int led = 11; /*pino 11 do arduino */
 /*depois eu troco o nome das variaveis para portugues mas por agora melhor não quebrar o codigo */
 #define HorarioRemedio    (0) /*numero do comando a configurar 0 do teste de voz (led vai acender) */
@@ -85,47 +89,38 @@ void setup()
   myVR.begin(9600); /*taxa de bits por segundo do arduino (preciso ver a velocidade do eps32) */
 
   Serial.begin(115200); /*taxa de bits por segundo do pcz */
-  Serial.println("modulo de reconhecimento de voz V3");
+  while (Serial.read() >= 0);
+  //Serial.println(chatid);
 
-  pinMode(led, OUTPUT);
-
-  if (myVR.clear() == 0) {
+ /*if (myVR.clear() == 0) {
     Serial.println("reconheceu o modulo de reconhecimento de voz V3.");
   } else {
     Serial.println("não foi encontrado o modulo de reconhecimento de voz.");
     Serial.println("Por favor cheque a conexão e reinicie o arduino.");
     while (1);
   }
-
   if (myVR.load((uint8_t)HorarioRemedio) >= 0) {
     Serial.println("Horario de Remedio foi carregado");
-  }
-
-  if (myVR.load((uint8_t)HorarioBanho) >= 0) {
-    Serial.println("Horario de Banho foi Carregado");
-  }
+  }*/
 }
 
 void loop()
 {
   int ret;
   ret = myVR.recognize(buf, 50); /*bota a variavel para reconhecer em x tempo vozez no loop*/
+  //Serial.read();
   if (ret > 0) {
     switch (buf[1]) {
       case HorarioRemedio:
-        /* acende o led */
-        //digitalWrite(led, HIGH);
-        Serial.println("o seu velho esta morrendo");
+        Serial.println("1");
         break;
       case HorarioBanho:
-        /* desliga o led */
-        //digitalWrite(led, LOW);
         break;
       default:
-        Serial.println("Record function undefined");
+        //Serial.println("Record function undefined");
         break;
     }
     /* a voz foi reconhecida */
-    printVR(buf);
+    //printVR(buf);
   }
 }
